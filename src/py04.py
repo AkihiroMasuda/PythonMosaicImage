@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 '''
 Created on 2013/08/23
-
 @author: akihiro
+モザイク画作成
+
 '''
 import numpy as np
 import numpy.random as rnd

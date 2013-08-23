@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
 Created on 2013/08/23
-
 @author: akihiro
+特定色に近い画像を求める
 '''
 import numpy as np
 import numpy.random as rnd

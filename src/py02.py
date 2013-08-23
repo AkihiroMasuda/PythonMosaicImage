@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 '''
 Created on 2013/08/23
-
 @author: akihiro
+特定色との残差平方和を求める
+
 '''
 import numpy as np
 import numpy.random as rnd

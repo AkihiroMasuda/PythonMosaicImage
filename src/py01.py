@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
 Created on 2013/08/23
-
 @author: akihiro
+CIFAR-10画像を読み込む
 '''
 import numpy as np
 import numpy.random as rnd
