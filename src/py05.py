@@ -2,7 +2,7 @@
 '''
 Created on 2013/08/23
 @author: akihiro
-モザイク画作成
+モザイク画高速化
 
 '''
 import numpy as np
@@ -42,6 +42,28 @@ def getRGB(dict, index):
     
     return r,g,b
 
+def getImageNum(dict):
+    '''
+           画像 データ数を得る    
+    '''
+    labels = dict['labels']
+    return np.size(labels)
+
+def calMeans(dict):
+    '''
+    CIFAR-10画像データそれぞれの平均色を算出
+    '''
+    data = dict['data']
+    num = getImageNum(dict)
+    means = np.zeros([num, 3], 'uint8')
+    for i in range(num):
+        [r, g, b] = getRGB(dict, i)
+        m_r = int(np.mean(r))
+        m_g = int(np.mean(g))
+        m_b = int(np.mean(b))
+        means[i,:] = [m_r, m_g, m_b]
+        
+    return means
 
 def getRGBTable(dict, index):
     '''
@@ -90,9 +112,46 @@ def findNearestColorImage(dict, ref_rgb, indexes=None):
     minind = np.argmin(rsses)
     minrss = rsses[minind]
     return indexes[minind], minrss   
+
+def findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, indexes=None):
+    '''
+    ref_rgb との残差平方和RSSが最小の画像を探す
+        画像の平均色を使い高速化
+        平均色が近いものだけをRSS計算の対象とする
+    '''
     
+    if indexes==None:
+        labels = dict['labels'] 
+        num = np.size(labels) #データ数
+        indexes = range(num)
+    else :
+        num = np.size(indexes)
+
+    #平均色と指定色のRSS算出
+    means_p = means[indexes, :]
+    means_p_deff = means_p - np.ones([num, 1])*np.mat(ref_rgb)
+    means_p_rss = np.sum(np.power(means_p_deff, 2),1) 
+    
+    #平均色のRSSをソート
+    means_p_sort_indexes = np.argsort(means_p_rss.A1) #昇順
+    means_p_sort = np.sort(means_p_rss.A1)
+
+    #画素毎のRSSによる評価対象とする数
+    if num < num_threashold:
+        num_threashold = num
+
+    #平均色RSSの小さい上位nu_threasholdまでを抽出
+    indexes_tar = np.array(indexes)[means_p_sort_indexes[:num_threashold]]
+
+    #画素毎のRSSが小さい物を選ぶ
+    return findNearestColorImage(dict, ref_rgb, indexes_tar)
+
     
 def putSmallImageOntoLargeImage(largeImage, smallImage, x, y):
+    '''
+    smallImageをlargeImage上の座標x,yに配置する
+    x,yにはsmallImageの左上が配置される
+    '''
     xsize = np.shape(smallImage)[0]
     ysize = np.shape(smallImage)[1]
     largeImage[x:x+xsize, y:y+ysize, :] = smallImage
@@ -115,6 +174,9 @@ if __name__ == '__main__':
 
     ticktock = Ticktock.Ticktock()
 
+    # 平均値一覧を取得
+    means = calMeans(dict)
+
     # 参照画像を取得
     ref_ind = 2
     ref_image = getRGBTable(dict, ref_ind)
@@ -130,9 +192,10 @@ if __name__ == '__main__':
         for y in range(range_xy[1]):
             ref_rgb = ref_image[x,y,:]
             # 一番色が近い画像を求める
-            [minind, rss] = findNearestColorImage(dict, ref_rgb, range(100))
-#             [minind, rss] = findNearestColorImage(dict, ref_rgb, range(10000))
-        #     [minind, rss] = findNearestColorImage(dict, ref_rgb)
+#             [minind2, rss2] = findNearestColorImage(dict, ref_rgb, range(100))
+#             ind3 = range(100)
+            num_threashold=50
+            [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(10000))
             # 一番近い画像を取得
             near_rgb = getRGBTable(dict, minind)
             putSmallImageOntoLargeImage(dest_image, near_rgb, x*32, y*32)

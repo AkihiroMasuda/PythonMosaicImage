@@ -73,13 +73,16 @@ def findNearestColorImage(dict, ref_rgb, indexes=None):
     '''
     if indexes==None:
         labels = dict['labels'] 
-        num = np.size(labels) #データ数
-        indexes = range(num)
+        num_all = np.size(labels) #データ数
+        indexes = range(num_all)
+
+    num = np.size(indexes)
 
     rsses = np.zeros(np.size(indexes), dtype="int")
-    for i in indexes:
+#     for i in indexes:
+    for i in range(num):
         # 参照色との残差平方和を求める
-        rsses[i] = getColorRSSFromRGB(dict, i, ref_rgb)
+        rsses[i] = getColorRSSFromRGB(dict, indexes[i], ref_rgb)
         pass
     minind = np.argmin(rsses)
     minrss = rsses[minind]
