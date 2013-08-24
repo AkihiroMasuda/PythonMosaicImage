@@ -181,7 +181,13 @@ if __name__ == '__main__':
     ref_ind = 2
     ref_image = getRGBTable(dict, ref_ind)
     fname = ("ref%05d" % ref_ind) + ".png"
-    pl.imsave(prjpath+"result\\py04\\" + fname, ref_image)
+    resultpath = prjpath+"result"
+    resultpath2 = resultpath + "/py04"
+    if os.path.exists(resultpath) == False:
+        os.mkdir(resultpath)
+    if os.path.exists(resultpath2 ) == False:
+        os.mkdir(resultpath2)
+    pl.imsave(resultpath2 + "/" + fname, ref_image)
 
     ticktock.tick()
 
@@ -203,5 +209,5 @@ if __name__ == '__main__':
     ticktock.tock()
      
     # 保存
-    pl.imsave(prjpath+"result\\py04\\dest.png",dest_image)
+    pl.imsave(resultpath2 + "/dest.png", dest_image)
 
