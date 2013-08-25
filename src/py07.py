@@ -6,6 +6,7 @@ Created on 2013/08/25
 ParallelPyを使って分散化
 '''
 import numpy 
+import pickle
 
 def getPIXNUM():
     return 32
@@ -14,13 +15,48 @@ def getPIXSIZE():
     return getPIXNUM()**2
 
 def getCifar10FilePath():
-#     prjpath = "D:\\root\\programing\\Python\\MosaicImage\\" #絶対パスしていでないとインタラクティブモードで失敗する
-#     dirpath = "data/cifar-10-python.tar/cifar-10-batches-py/"
-    dirpath = "/home/pi/ppdata/cifar-10/"
+    if False:
+        prjpath = "D:\\root\\programing\\Python\\MosaicImage\\" #絶対パスしていでないとインタラクティブモードで失敗する
+        subdirpath = "data/cifar-10-python.tar/cifar-10-batches-py/"
+        dirpath = prjpath + subdirpath
+    else:
+        dirpath = "/home/pi/ppdata/cifar-10/"
     file = "data_batch_1"
 #     fullpath = prjpath + dirpath + file
     fullpath = dirpath + file
-    return fullpath 
+    return fullpath
+
+def getMeanFilePath():
+    '''
+        画像毎の平均値を保存するファイルのパスを返す
+    '''
+    [dirpath, tail] = os.path.split(getCifar10FilePath())
+    filename = "mean.dat"
+    fullpath = dirpath + filename
+    return fullpath
+
+def isExistMenaFile():
+    '''
+        画像毎の平均値を保存したファイルｆが既にあるかどうかを返す
+    '''
+    return os.path.exists(getMeanFilePath())
+
+def saveMeans(mean):
+    '''
+        画像毎の平均値をファイルに保存
+    '''
+    f = open(getMeanFilePath(), 'w');
+    pickle.dump(mean, f)
+    f.close()
+    
+def loadMeans():
+    '''
+        画像毎の平均値をファイルからロード
+    '''
+    f = open(getMeanFilePath());
+    obj = pickle.load(f)
+    f.close()
+    return obj
 
 def unpickle(file):
     '''
@@ -169,7 +205,11 @@ def makeMosaicImage(imgArray):
     num = numpy.size(labels) #データ数
     
     # 平均値一覧を取得
-    means = calMeans(dict)
+    if isExistMenaFile():
+        means = loadMeans()
+    else:
+        means = calMeans(dict)
+        saveMeans(means)
 
     range_xy = numpy.shape(imgArray)
     dest_image = numpy.zeros([range_xy[0]*32, range_xy[1]*32, 3], dtype='uint8') #uint8で作るのが大事
@@ -261,10 +301,10 @@ def split_seq(seq, num):
 def main():
     
 #     ppservers = ()
-#     ppservers = ("192.168.1.243",)
+#     ppservers = ("192.168.1.242",)
     ppservers = ("192.168.1.243","192.168.1.242", )
+#     job_server = pp.Server(1, ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
     job_server = pp.Server(0, ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
-#     job_server = pp.Server(ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
     
     # 時間測定用
     ticktock = Ticktock.Ticktock()
@@ -274,8 +314,8 @@ def main():
 
     # 変換元画像を分割
     # 水平方向（X方向）に分割
-    num_separate = 1 #分割数
 #     num_separate = 1 #分割数
+    num_separate = len(ppservers) #分割数
     size_x = numpy.shape(ref_image)[1]
     columns = split_seq(range(size_x), num_separate)
     ref_img_separated = []
@@ -292,8 +332,8 @@ def main():
                                  (unpickle, calMeans, getImageNum, getRGB, getPIXSIZE,
                                    getPIXNUM, findNearestColorImageUseMeans, findNearestColorImage,
                                     getColorRSSFromRGB, getRGBTable, putSmallImageOntoLargeImage,
-                                     getCifar10FilePath),
-                                 ("numpy",)) 
+                                     getCifar10FilePath, isExistMenaFile, getMeanFilePath, saveMeans, loadMeans, ),
+                                 ("numpy","pickle")) 
         jobs.append(job)
         
     # 実行結果を得る
