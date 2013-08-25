@@ -13,6 +13,15 @@ def getPIXNUM():
 def getPIXSIZE():
     return getPIXNUM()**2
 
+def getCifar10FilePath():
+#     prjpath = "D:\\root\\programing\\Python\\MosaicImage\\" #絶対パスしていでないとインタラクティブモードで失敗する
+#     dirpath = "data/cifar-10-python.tar/cifar-10-batches-py/"
+    dirpath = "/home/pi/ppdata/cifar-10/"
+    file = "data_batch_1"
+#     fullpath = prjpath + dirpath + file
+    fullpath = dirpath + file
+    return fullpath 
+
 def unpickle(file):
     '''
     CIFAR-10画像データ（Python用）を読み込む
@@ -141,12 +150,19 @@ def findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, indexes=
     #画素毎のRSSが小さい物を選ぶ
     return findNearestColorImage(dict, ref_rgb, indexes_tar)
 
+
+def putSmallImageOntoLargeImage(largeImage, smallImage, x, y):
+    '''
+    smallImageをlargeImage上の座標x,yに配置する
+    x,yにはsmallImageの左上が配置される
+    '''
+    xsize = numpy.shape(smallImage)[1]
+    ysize = numpy.shape(smallImage)[0]
+    largeImage[x:x+xsize, y:y+ysize, :] = smallImage
+    
+
 def makeMosaicImage(imgArray):
-    prjpath = "D:\\root\\programing\\Python\\MosaicImage\\" #絶対パスしていでないとインタラクティブモードで失敗する
-    dirpath = "data/cifar-10-python.tar/cifar-10-batches-py/"
-    file = "data_batch_1"
-    fullpath = prjpath + dirpath + file
-    dict = unpickle(fullpath)
+    dict = unpickle(getCifar10FilePath())
     
     data = dict['data']
     labels = dict['labels'] 
@@ -166,22 +182,14 @@ def makeMosaicImage(imgArray):
 #             ind3 = range(100)
 #             num_threashold=50
             num_threashold=1
-            [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(10000))
+#             [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(10000))
+            [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(100))
             # 一番近い画像を取得
             near_rgb = getRGBTable(dict, minind)
             putSmallImageOntoLargeImage(dest_image, near_rgb, x*32, y*32)
 
     return dest_image
 
-    
-def putSmallImageOntoLargeImage(largeImage, smallImage, x, y):
-    '''
-    smallImageをlargeImage上の座標x,yに配置する
-    x,yにはsmallImageの左上が配置される
-    '''
-    xsize = numpy.shape(smallImage)[1]
-    ysize = numpy.shape(smallImage)[0]
-    largeImage[x:x+xsize, y:y+ysize, :] = smallImage
     
     
 ''' ------------ 以下はローカル処理 -------------- '''
@@ -252,10 +260,11 @@ def split_seq(seq, num):
     
 def main():
     
-    ppservers = ()
-#     ppservers = ("192.168.1.3",)
-#     job_server = pp.Server(0, ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
-    job_server = pp.Server(ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
+#     ppservers = ()
+#     ppservers = ("192.168.1.243",)
+    ppservers = ("192.168.1.243","192.168.1.242", )
+    job_server = pp.Server(0, ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
+#     job_server = pp.Server(ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
     
     # 時間測定用
     ticktock = Ticktock.Ticktock()
@@ -265,32 +274,34 @@ def main():
 
     # 変換元画像を分割
     # 水平方向（X方向）に分割
-    num_separate = 2 #分割数
+    num_separate = 1 #分割数
+#     num_separate = 1 #分割数
     size_x = numpy.shape(ref_image)[1]
     columns = split_seq(range(size_x), num_separate)
     ref_img_separated = []
     for i in range(num_separate):
         ref_img_separated.append(ref_image[:,columns[i],:]) 
     
+    ticktock.tick() #速度測定開始
+
     # モザイク画作成
-    ticktock.tick()
     jobs = []
     for i, img_in in enumerate(ref_img_separated):
-        job = job_server.submit(makeMosaicImage, (img_in,), (unpickle, calMeans, getImageNum, getRGB, getPIXSIZE, getPIXNUM, findNearestColorImageUseMeans, findNearestColorImage, getColorRSSFromRGB, getRGBTable, putSmallImageOntoLargeImage, ), ("numpy",)) 
+        job = job_server.submit(makeMosaicImage,
+                                 (img_in,),
+                                 (unpickle, calMeans, getImageNum, getRGB, getPIXSIZE,
+                                   getPIXNUM, findNearestColorImageUseMeans, findNearestColorImage,
+                                    getColorRSSFromRGB, getRGBTable, putSmallImageOntoLargeImage,
+                                     getCifar10FilePath),
+                                 ("numpy",)) 
         jobs.append(job)
         
-    ticktock.tock()
-
-
     # 実行結果を得る
     dest_image = []
     for jo in jobs:
         result = jo()
-        print result
+#         print result
         dest_image.append(result)
-    
-    # レポート表示
-    job_server.print_stats()
 
     # 変換結果を結合
     dest_image_cat = [] 
@@ -299,6 +310,12 @@ def main():
             dest_image_cat = img_out
         else:
             dest_image_cat = numpy.hstack([dest_image_cat, img_out])
+            
+    ticktock.tock() #速度測定終了
+    
+    # レポート表示
+    job_server.print_stats()
+            
     
     # 保存
     pl.imsave(getResultPath() + "/dest.png", dest_image_cat)    
