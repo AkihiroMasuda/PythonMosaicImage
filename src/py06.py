@@ -8,19 +8,12 @@ ParallelPyを使って分散化のための準備
 '''
 import numpy as np
 import numpy.random as rnd
-import matplotlib.pylab as pl
-from numpy.random import * 
-import Ticktock
-import time
-import os
-import sys
-import Image
-import math
 
-PIXNUM = 32
-PIXSIZE = PIXNUM*PIXNUM 
+def getPIXNUM():
+    return 32
 
-
+def getPIXSIZE():
+    return getPIXNUM()**2
 
 def unpickle(file):
     '''
@@ -38,6 +31,7 @@ def getRGB(dict, index):
     data = dict['data']
     
     curimg = data[index]
+    PIXSIZE = getPIXSIZE()
     r = curimg[0:PIXSIZE]
     g = curimg[PIXSIZE:PIXSIZE*2]
     b = curimg[PIXSIZE*2:]
@@ -76,6 +70,7 @@ def getRGBTable(dict, index):
     '''
     [r, g, b] = getRGB(dict, index)
     rgb = np.vstack([r,g,b])
+    PIXNUM = getPIXNUM()
     rgb = np.reshape(rgb.T, [PIXNUM, PIXNUM, 3])
     return rgb
 
@@ -191,7 +186,12 @@ def putSmallImageOntoLargeImage(largeImage, smallImage, x, y):
     largeImage[x:x+xsize, y:y+ysize, :] = smallImage
     
     
-    
+''' ------------ 以下はローカル処理 -------------- '''
+import Ticktock
+import matplotlib.pylab as pl
+import math
+import os
+
 def getResultPath():
     '''
           結果保存先のパスを取得
@@ -252,9 +252,6 @@ def split_seq(seq, num):
     return [seq[i:i+size] for i in range(0, len(seq), size)]    
     
 def main():
-    # CIFAR-10画像の読み込み
-    print sys.argv[0]
-
     # 時間測定用
     ticktock = Ticktock.Ticktock()
 
