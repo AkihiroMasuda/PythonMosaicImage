@@ -14,6 +14,7 @@ import os
 import pp
 
 import py08_pcalc
+import py08_image
 
 def getResultPath():
     '''
@@ -137,7 +138,10 @@ def main(srcImg):
     
 
 if __name__ == '__main__':
-    srcImg = loadSrcImage()
+    f = open(getResultPath() + "/input.png", "rb")
+    data = f.read()
+    srcImg = py08_image.convImgBindata2RGBArray(data)
+#     srcImg = loadSrcImage()
     outImg = main(srcImg)
     # 保存
     pl.imsave(getResultPath() + "/dest.png", outImg)
