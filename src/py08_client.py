@@ -5,22 +5,23 @@ p02_s_bottle と通信するクライアント側のサンプル
 @author: akihiro
 '''
 import httplib
-import py08_posthelper as helper
+import py08_posthelper as posthelper
+import py08_image
+
+def getDirPath():
+    return "../result/py08/client/"
 
 def post_send_file():
-#     conn = httplib.HTTPConnection('localhost:8080')
-#     conn.re
-    dir_path = "../result/py08/"
+    dir_path = getDirPath() 
     url = "http://localhost:8080/posttest"  
     postdata = {"fileUpload": open(dir_path + "input.png", "r+b")}  
-    resp = helper.open_url(url, postdata) 
+    resp = posthelper.open_url(url, postdata) 
     return resp.read()
-#     return resp
 
 def get_dat():
     conn = httplib.HTTPConnection('localhost:8080')
     # conn.request( "GET", "/static/icon" )
-    conn.request( "GET", "/static2/icon.png" )
+    conn.request( "GET", "/static/icon" )
     # conn.request( "GET", "/helloa" )
     res = conn.getresponse()
     
@@ -29,7 +30,6 @@ def get_dat():
     
     dat = res.read()
     print('len : ' + str(len(dat)))
-    # print( dat.decode( "UTF-8" ) )
     
     conn.close()
     
@@ -39,6 +39,8 @@ def get_dat():
 
 
 if __name__ == '__main__':
-    print post_send_file()
-#     get_dat()
+    dat = post_send_file()
+    print "len : " + str(len(dat))
+    with open(getDirPath() + "py08_client_get.png", 'wb') as open_file:
+        open_file.write(dat)
     pass
