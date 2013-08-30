@@ -32,31 +32,6 @@ def getResultPath():
         os.mkdir(resultpath2)
     
     return resultpath2
-    
-    
-def loadSrcImage():
-    """
-        変換元の画像を取得
-    return : RGB配列  MxNx3 [[[R00,G00,B00], [R01,G01,B01], ... ],
-                           [[R10,G10,B10], [R11,G11,B11], ... ],
-                           ...
-                           ]
-    """
-    prjpath = "D:\\root\\programing\\Python\\MosaicImage\\" #絶対パスしていでないとインタラクティブモードで失敗する
-    dirpath = "data/cifar-10-python.tar/cifar-10-batches-py/"
-    file = "data_batch_1"
-    fullpath = prjpath + dirpath + file
-    dict = py08_pcalc.unpickle(fullpath)
-    
-    # 参照画像を取得
-    ref_ind = 2
-    ref_image = py08_pcalc.getRGBTable(dict, ref_ind)
-    fname = ("ref%05d" % ref_ind) + ".png"
-    
-    # 参照画像を保存
-    pl.imsave( getResultPath() + "/" + fname, ref_image)
-     
-    return ref_image
      
     
 def split_seq(seq, num):
@@ -141,7 +116,6 @@ if __name__ == '__main__':
     f = open(getResultPath() + "/input.png", "rb")
     data = f.read()
     srcImg = py08_image.convImgBindata2RGBArray(data)
-#     srcImg = loadSrcImage()
     outImg = main(srcImg)
     # 保存
     pl.imsave(getResultPath() + "/dest.png", outImg)

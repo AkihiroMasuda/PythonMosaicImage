@@ -20,6 +20,12 @@ def convImgBindata2RGBAArray(data):
     return convImgBindata2Array(data, "RGBA")
 
 def convImgBindata2RGBArray(data):
+    """
+    return : RGB配列  MxNx3 [[[R00,G00,B00], [R01,G01,B01], ... ],
+                           [[R10,G10,B10], [R11,G11,B11], ... ],
+                           ...
+                           ]
+    """
     return convImgBindata2Array(data, "RGB")
 
 
