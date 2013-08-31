@@ -2,13 +2,9 @@
 <head>
 <script type="text/javascript">
 
-function doGET_IMAGE(){
 
-	window.URL = window.URL || window.webkitURL; 
-	
-	var xhr = new XMLHttpRequest();
-	//xhr.open('POST', 'http://localhost:8080/posttest', true);
-	xhr.open('GET', 'http://localhost:8080/static/imgdata', true);
+// XMLHttpRequestの主だった部分を作成
+function buildXHR(xhr){
 //	xhr.responseType = 'arraybuffer';
 	xhr.responseType = 'blob';
 	
@@ -28,54 +24,41 @@ function doGET_IMAGE(){
 		    img.setAttribute("width", "200px");
 		}
 	};
-	
-	xhr.send();
+
+    return xhr;    
+}
+    
+// 画像取得GET発行    
+function doGET_IMAGE(){
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'http://localhost:8080/static/imgdata', true);
+    buildXHR(xhr);
+    xhr.send();
 }
 
+// 画像送信POST発行、変換結果の画像を取得
 function uploadFiles(url, files) {
 	var formData = new FormData();
-	
-//	alert("ghioo")
-	
-	for (var i = 0, file; file = files[i]; ++i) {
-	//    formData.append(file.name, file);
-		formData.append('fileUpload', file);
-	}
-	formData.append('workers', '192.168.1.243,192.168.1.242');
-	
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', url, true);
-	xhr.responseType = 'blob';
-	xhr.onload = function(e) {
-//		alert("onload")
-		if (this.status == 200) {
-//			alert(this.status)
-			var uInt8Array = new Uint8Array(this.response); // this.response == uInt8Array.buffer
-//			alert(uInt8Array.length)
-			var blob = this.response;
-		    var img = document.createElement('img');
-		    img.onload = function(e) {
-				window.URL.revokeObjectURL(img.src); // Clean up after yourself.
-			};
-		    img.src = window.URL.createObjectURL(blob);
-		    document.body.appendChild(img);
-		    img.setAttribute("width", "100px");
-	    }
-	};
-	
-	xhr.send(formData);  // multipart/form-data
+	formData.append('workers', '192.168.1.243,192.168.1.242');
+	for (var i = 0, file; file = files[i]; ++i) {
+		formData.append('fileUpload', file);
+	}
+    buildXHR(xhr);
+    xhr.send(formData);
 }
 
 
 </script></head>
 <body>
-<input type="button" value="GET" onClick="doGET_IMAGE();"></input>
+<input type="button" value="GET" onClick="doGET_IMAGE();" />
 <br>
-<input type="file"></input>
+<input type="file" />
 <br>
 
 <script type="text/javascript">
-// �����̃R�[�h�� input �^�O���ł��Ă���łȂ���΃G���[�ɂȂ�̂ŁA���ɏ���
+// 以下のコードはinputタグができてないとエラーになるので、下の方に記述
 document.querySelector('input[type="file"]').addEventListener('change', function(e) {
   uploadFiles('http://localhost:8080/posttest', this.files);
 }, false);
