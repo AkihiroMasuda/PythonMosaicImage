@@ -26,18 +26,61 @@ function doGET_IMAGE(){
 		    img.src = window.URL.createObjectURL(blob);
 		    document.body.appendChild(img);
 		    img.setAttribute("width", "200px");
-    
-	  }
+		}
 	};
 	
 	xhr.send();
+}
 
+function uploadFiles(url, files) {
+	var formData = new FormData();
 	
+//	alert("ghioo")
+	
+	for (var i = 0, file; file = files[i]; ++i) {
+	//    formData.append(file.name, file);
+		formData.append('fileUpload', file);
+	}
+	formData.append('workers', '192.168.1.243,192.168.1.242');
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', url, true);
+	xhr.responseType = 'blob';
+	xhr.onload = function(e) {
+//		alert("onload")
+		if (this.status == 200) {
+//			alert(this.status)
+			var uInt8Array = new Uint8Array(this.response); // this.response == uInt8Array.buffer
+//			alert(uInt8Array.length)
+			var blob = this.response;
+		    var img = document.createElement('img');
+		    img.onload = function(e) {
+				window.URL.revokeObjectURL(img.src); // Clean up after yourself.
+			};
+		    img.src = window.URL.createObjectURL(blob);
+		    document.body.appendChild(img);
+		    img.setAttribute("width", "100px");
+	    }
+	};
+	
+	xhr.send(formData);  // multipart/form-data
 }
 
 
 </script></head>
 <body>
 <input type="button" value="GET" onClick="doGET_IMAGE();"></input>
+<br>
+<input type="file"></input>
+<br>
+
+<script type="text/javascript">
+// ここのコードは input タグができてからでなければエラーになるので、下に書く
+document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+  uploadFiles('http://localhost:8080/posttest', this.files);
+}, false);
+
+</script>
+
 </body>
 </html>
