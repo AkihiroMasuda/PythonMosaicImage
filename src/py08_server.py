@@ -18,8 +18,9 @@ def getDirPath():
 @post('/posttest') # or @route('/login', method='POST')
 def do_posttest():
 
-    upload     = request.files.get('fileUpload') #ファイルのデータ取得
-    name, ext = os.path.splitext(upload.filename) #ファイル名を分割
+    workers     = tuple(request.params.get('workers', 'NONE').split(',')) #分散処理対象のPCのIP
+    upload      = request.files.get('fileUpload') #ファイルのデータ取得
+    name, ext   = os.path.splitext(upload.filename) #ファイル名を分割
 #     save_path = "./"
     save_path = getDirPath() 
 
@@ -29,9 +30,8 @@ def do_posttest():
         open_file.write(rdat)
         
         srcImg = py08_image.convImgBindata2RGBArray(rdat)
-        outImg = py08.main(srcImg)
-        
-        print "hogehoge"
+#         outImg = py08.main(srcImg)
+        outImg = py08.main(srcImg, workers)
         
         #一旦pngファイルとして保存してから返却
         ret_filename = "outImg2.png"
@@ -40,8 +40,6 @@ def do_posttest():
         #保存したのを直ぐ開く
 #         f = open(save_full_path, "rb")
 #         data = f.read()
-    
-        print "hogehoge2"
 
         ret = static_file(ret_filename, root=getDirPath(), download=ret_filename)
         return ret

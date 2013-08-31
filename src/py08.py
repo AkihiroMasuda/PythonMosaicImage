@@ -46,7 +46,7 @@ def split_seq(seq, num):
     size = int(math.ceil(float(l)/num))
     return [seq[i:i+size] for i in range(0, len(seq), size)]    
     
-def main(srcImg):
+def main(srcImg, ppservers):
     """
     input : 
         srcImg :入力画像配列. サイズ  NxMx3 のRGBのnum.array
@@ -55,7 +55,7 @@ def main(srcImg):
     """
 #     ppservers = ()
 #     ppservers = ("192.168.1.242",)
-    ppservers = ("192.168.1.243","192.168.1.242", )
+#     ppservers = ("192.168.1.243","192.168.1.242", )
 #     job_server = pp.Server(1, ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
     job_server = pp.Server(0, ppservers=ppservers) #自PCのCPUリソース数を第一引き数で指定。0だと自PCは何もしない
     
@@ -116,7 +116,8 @@ if __name__ == '__main__':
     f = open(getResultPath() + "/input.png", "rb")
     data = f.read()
     srcImg = py08_image.convImgBindata2RGBArray(data)
-    outImg = main(srcImg)
+    ppservers = ("192.168.1.243","192.168.1.242", )
+    outImg = main(srcImg, ppservers)
     # 保存
     pl.imsave(getResultPath() + "/dest.png", outImg)
 
