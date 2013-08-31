@@ -198,7 +198,7 @@ def putSmallImageOntoLargeImage(largeImage, smallImage, x, y):
     largeImage[x:x+xsize, y:y+ysize, :] = smallImage
 
 
-def makeMosaicImage(imgArray):
+def makeMosaicImage(imgArray, numsOfSampleImages):
     dict = unpickle(getCifar10FilePath())
     
     data = dict['data']
@@ -224,7 +224,8 @@ def makeMosaicImage(imgArray):
 #             num_threashold=50
             num_threashold=1
 #             [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(10000))
-            [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(100))
+#             [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(100))
+            [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(numsOfSampleImages))
             # 一番近い画像を取得
             near_rgb = getRGBTable(dict, minind)
             putSmallImageOntoLargeImage(dest_image, near_rgb, x*32, y*32)

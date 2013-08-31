@@ -46,7 +46,7 @@ def split_seq(seq, num):
     size = int(math.ceil(float(l)/num))
     return [seq[i:i+size] for i in range(0, len(seq), size)]    
     
-def main(srcImg, ppservers):
+def main(srcImg, ppservers, numsOfSampleImages):
     """
     input : 
         srcImg :入力画像配列. サイズ  NxMx3 のRGBのnum.array
@@ -77,7 +77,7 @@ def main(srcImg, ppservers):
     jobs = []
     for i, img_in in enumerate(ref_img_separated):
         job = job_server.submit(py08_pcalc.makeMosaicImage,
-                                 (img_in,),
+                                 (img_in,numsOfSampleImages,),
                                  (py08_pcalc.unpickle, py08_pcalc.calMeans, py08_pcalc.getImageNum, py08_pcalc.getRGB, py08_pcalc.getPIXSIZE,
                                    py08_pcalc.getPIXNUM, py08_pcalc.findNearestColorImageUseMeans, py08_pcalc.findNearestColorImage,
                                     py08_pcalc.getColorRSSFromRGB, py08_pcalc.getRGBTable, py08_pcalc.putSmallImageOntoLargeImage,
@@ -117,7 +117,8 @@ if __name__ == '__main__':
     data = f.read()
     srcImg = py08_image.convImgBindata2RGBArray(data)
     ppservers = ("192.168.1.243","192.168.1.242", )
-    outImg = main(srcImg, ppservers)
+    numsOfSampleImages = 100
+    outImg = main(srcImg, ppservers,numsOfSampleImages)
     # 保存
 #     pl.imsave(, )
     py08_image.convRGBAArray2Imgfile(outImg, getResultPath() + "/dest.png")

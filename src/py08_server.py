@@ -19,6 +19,7 @@ def do_posttest():
     print 'connection accepted'
 
     workers     = tuple(request.params.get('workers', 'NONE').split(',')) #分散処理対象のPCのIP
+    numsOfSampleImages = int(request.params.get('numOfSampleImages', '100'))
     upload      = request.files.get('fileUpload') #ファイルのデータ取得
     name, ext   = os.path.splitext(upload.filename) #ファイル名を分割
     
@@ -32,7 +33,7 @@ def do_posttest():
         
         srcImg = py08_image.convImgBindata2RGBArray(rdat)
 #         outImg = py08.main(srcImg)
-        outImg = py08.main(srcImg, workers)
+        outImg = py08.main(srcImg, workers, numsOfSampleImages)
         
         #一旦pngファイルとして保存してから返却
         ret_filename = "outImg2.png"

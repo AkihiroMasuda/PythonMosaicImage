@@ -13,9 +13,11 @@ def getDirPath():
 
 def post_file():
     dir_path = getDirPath() 
-#     url = "http://localhost:8080/posttest"  
-    url = "http://192.168.1.253:8080/posttest"  
+    url = "http://localhost:8080/posttest"  
+#     url = "http://192.168.1.253:8080/posttest"
+#     url = "http://192.168.1.243:8080/posttest"  
     postdata = {"workers": "  192.168.1.242,  192.168.1.243", 
+                "numOfSampleImages": "200",
                 "fileUpload": open(dir_path + "input.png", "r+b")}
     resp = posthelper.open_url(url, postdata) 
     return resp.read()
