@@ -44,6 +44,7 @@ def do_posttest():
 #         data = f.read()
 
         ret = static_file(ret_filename, root=getDirPath(), download=ret_filename)
+        ret.add_header('Access-Control-Allow-Origin', '*')
         return ret
         
 #         return "OK : readdata=%d [Byte]" % len(rdat)
@@ -59,9 +60,11 @@ def do_posttest():
 def send_static(filename='icon'):
     print 'send_static called' 
     print filename
-    return static_file(filename, root=getDirPath(), download=filename)
+    ret = static_file(filename, root=getDirPath(), download=filename)
+    ret.add_header('Access-Control-Allow-Origin', '*')
+    return ret
 
 # コレ必要
-# run(host='localhost', port=8080, debug=True)
-run(host='192.168.1.253', port=8080, debug=True)
+run(host='localhost', port=8080, debug=True)
+# run(host='192.168.1.253', port=8080, debug=True)
 

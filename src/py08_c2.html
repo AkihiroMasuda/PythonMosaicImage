@@ -1,0 +1,43 @@
+<html>
+<head>
+<script type="text/javascript">
+
+function doGET_IMAGE(){
+
+	window.URL = window.URL || window.webkitURL; 
+	
+	var xhr = new XMLHttpRequest();
+	//xhr.open('POST', 'http://localhost:8080/posttest', true);
+	xhr.open('GET', 'http://localhost:8080/static/imgdata', true);
+//	xhr.responseType = 'arraybuffer';
+	xhr.responseType = 'blob';
+	
+	xhr.onload = function(e) {
+//		alert("onload")
+		if (this.status == 200) {
+//			alert(this.status)
+			var uInt8Array = new Uint8Array(this.response); // this.response == uInt8Array.buffer
+//			alert(uInt8Array.length)
+			var blob = this.response;
+		    var img = document.createElement('img');
+		    img.onload = function(e) {
+				window.URL.revokeObjectURL(img.src); // Clean up after yourself.
+			};
+		    img.src = window.URL.createObjectURL(blob);
+		    document.body.appendChild(img);
+		    img.setAttribute("width", "200px");
+    
+	  }
+	};
+	
+	xhr.send();
+
+	
+}
+
+
+</script></head>
+<body>
+<input type="button" value="GET" onClick="doGET_IMAGE();"></input>
+</body>
+</html>
