@@ -9,7 +9,6 @@ from bottle import route, run, get, post, request, static_file, template
 import time
 import py08
 import py08_image
-import matplotlib.pylab as pl
 
 def getDirPath():
     return "../result/py08/server/"
@@ -36,7 +35,8 @@ def do_posttest():
         #一旦pngファイルとして保存してから返却
         ret_filename = "outImg2.png"
         save_full_path = save_path + ret_filename
-        pl.imsave(save_full_path, outImg)
+#         pl.imsave(save_full_path, outImg)
+        py08_image.convRGBAArray2Imgfile(outImg, save_full_path)
         #保存したのを直ぐ開く
 #         f = open(save_full_path, "rb")
 #         data = f.read()
@@ -60,5 +60,6 @@ def send_static(filename='icon'):
     return static_file(filename, root=getDirPath(), download=filename)
 
 # コレ必要
-run(host='localhost', port=8080, debug=True)
+# run(host='localhost', port=8080, debug=True)
+run(host='192.168.1.253', port=8080, debug=True)
 

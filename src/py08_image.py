@@ -5,10 +5,10 @@ png画像ファイルと numpyの配列 の相互変換サンプル
 @author: akihiro
 '''
 
+
 import Image
 import StringIO
 import numpy as np
-import matplotlib.pylab as pl
 
 def convImgBindata2Array(data, fmt):
     img = Image.open(StringIO.StringIO(data))
@@ -35,9 +35,20 @@ def convImgfile2RGBAArray(fname):
     rgb = convImgBindata2RGBAArray(data)
     return rgb
 
+def convImgfile2RGBArray(fname):
+    f = open(fname, "rb")
+    data = f.read()
+    rgb = convImgBindata2RGBArray(data)
+    return rgb
+
 def convRGBAArray2Imgfile(rgb_array, fname):
-#     Image.save(rgb_array)
-    pl.imsave(fname, rgb_array)
+    """
+    numpy配列 からImageを使って保存
+    """
+    pilImg = Image.fromarray(np.uint8(rgb_array))
+    pilImg.save(fname)
+    
+
 
 if __name__ == '__main__':
     rgb = convImgfile2RGBAArray('icon.png')
