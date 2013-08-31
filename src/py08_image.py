@@ -5,8 +5,8 @@ png画像ファイルと numpyの配列 の相互変換サンプル
 @author: akihiro
 '''
 
-
-import Image
+# import Image
+from PIL import Image
 import StringIO
 import numpy as np
 
@@ -49,10 +49,11 @@ def convRGBAArray2Imgfile(rgb_array, fname):
     pilImg.save(fname)
     
 
-
 if __name__ == '__main__':
-    rgb = convImgfile2RGBAArray('icon.png')
+#     rgb = convImgfile2RGBAArray('icon.png')
+    rgb = convImgfile2RGBArray('dest.png')
     print rgb
     print np.shape(rgb)
-    convRGBAArray2Imgfile(np.reshape(rgb, [512,512,4]), 'hoge.png')
+    size = np.shape(rgb)
+    convRGBAArray2Imgfile(np.reshape(rgb, [size[0],size[1],3]), 'hoge.png')
     pass

@@ -16,10 +16,12 @@ def getDirPath():
 # postでバイナリデータを送ってみる例
 @post('/posttest') # or @route('/login', method='POST')
 def do_posttest():
+    print 'connection accepted'
 
     workers     = tuple(request.params.get('workers', 'NONE').split(',')) #分散処理対象のPCのIP
     upload      = request.files.get('fileUpload') #ファイルのデータ取得
     name, ext   = os.path.splitext(upload.filename) #ファイル名を分割
+    
 #     save_path = "./"
     save_path = getDirPath() 
 

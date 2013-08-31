@@ -8,7 +8,7 @@ mainの入出力を画像データに変更
 '''
 import numpy 
 import Ticktock
-import matplotlib.pylab as pl
+# import matplotlib.pylab as pl
 import math
 import os
 import pp
@@ -119,5 +119,6 @@ if __name__ == '__main__':
     ppservers = ("192.168.1.243","192.168.1.242", )
     outImg = main(srcImg, ppservers)
     # 保存
-    pl.imsave(getResultPath() + "/dest.png", outImg)
+#     pl.imsave(, )
+    py08_image.convRGBAArray2Imgfile(outImg, getResultPath() + "/dest.png")
 
