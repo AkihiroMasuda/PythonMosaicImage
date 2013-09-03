@@ -19,7 +19,8 @@ def do_posttest():
     print 'connection accepted'
 
     workers     = tuple(request.params.get('workers', 'NONE').split(',')) #分散処理対象のPCのIP
-    numsOfSampleImages = int(request.params.get('numOfSampleImages', '100'))
+    numsOfSampleImages  = int(request.params.get('numOfSampleImages', '100'))
+    src_long_size       = int(request.params.get('srcLongSize', '32')) #元画像を縮小したあとの長辺長さ
     upload      = request.files.get('fileUpload') #ファイルのデータ取得
     name, ext   = os.path.splitext(upload.filename) #ファイル名を分割
     
@@ -31,27 +32,31 @@ def do_posttest():
         rdat = upload.file.read() #あまり大きなデータの時はまずいらしい
         open_file.write(rdat)
         
-        srcImg = py08_image.convImgBindata2RGBArray(rdat)
-#         outImg = py08.main(srcImg)
-        outImg = py08.main(srcImg, workers, numsOfSampleImages)
-        
-        #一旦pngファイルとして保存してから返却
-        ret_filename = "outImg2.png"
-        save_full_path = save_path + ret_filename
-#         pl.imsave(save_full_path, outImg)
-        py08_image.convRGBAArray2Imgfile(outImg, save_full_path)
-        #保存したのを直ぐ開く
-#         f = open(save_full_path, "rb")
-#         data = f.read()
+    #入力画像を整える
+    img_org = py08_image.createImageFromBindata(rdat)
+    size_org = img_org.size
+#     src_long_size = 32 #長辺が合わせるべき長さ
+    if size_org[0] < size_org[1]:
+        size_resized = (int(float(size_org[0])/size_org[1]*src_long_size), src_long_size)
+    else:
+        size_resized = (src_long_size, int(float(size_org[1])/size_org[0]*src_long_size))
+    img_resized = py08_image.resizeImgBinData(rdat, size_resized[0], size_resized[1])
+    srcImg = py08_image.convImg2Array(img_resized, img_resized.mode)
 
-        ret = static_file(ret_filename, root=getDirPath(), download=ret_filename)
-        ret.add_header('Access-Control-Allow-Origin', '*')
-        return ret
-        
-#         return "OK : readdata=%d [Byte]" % len(rdat)
-#         return 
+    # 分散処理実施
+    outImg = py08.main(srcImg, workers, numsOfSampleImages)
+    
+    #一旦pngファイルとして保存してから返却
+    ret_filename = "outImg2.png"
+    save_full_path = save_path + ret_filename
+#         pl.imsave(save_full_path, outImg)
+    py08_image.convRGBAArray2Imgfile(outImg, save_full_path)
+
+    ret = static_file(ret_filename, root=getDirPath(), download=ret_filename)
+    ret.add_header('Access-Control-Allow-Origin', '*')
+    return ret
          
-    return "NG"
+#     return "NG"
 
 # get でバイナリデートを受信してみる例
 # http://localhost:8080/hogehoge

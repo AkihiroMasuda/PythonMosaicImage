@@ -42,7 +42,9 @@ function uploadFiles(url, files) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', url, true);
 	formData.append('workers', '192.168.1.243,192.168.1.242');
-	formData.append('numOfSampleImages', '200');
+//	formData.append('numOfSampleImages', '10000');
+	formData.append('numOfSampleImages', '100');
+	formData.append('srcLongSize', '64');
 	for (var i = 0, file; file = files[i]; ++i) {
 		formData.append('fileUpload', file);
 	}

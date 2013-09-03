@@ -10,11 +10,26 @@ from PIL import Image
 import StringIO
 import numpy as np
 
-def convImgBindata2Array(data, fmt):
-    img = Image.open(StringIO.StringIO(data))
+def createImageFromBindata(data):
+    return Image.open(StringIO.StringIO(data))
+
+def convImg2Array(img, fmt):
+    """
+    input : img : Imageオブジェクト
+            fmt : フォーマット  Image.mode参照
+    return : 配列
+            RGBの場合  MxNx3 [[[R00,G00,B00], [R01,G01,B01], ... ],
+                           [[R10,G10,B10], [R11,G11,B11], ... ],
+                           ...
+                           ]
+    """
     rgbimg = img.convert(fmt)
     rgb = np.array(rgbimg, dtype='uint8')
     return rgb
+
+def convImgBindata2Array(data, fmt):
+    img = Image.open(StringIO.StringIO(data))
+    return convImg2Array(img, fmt)
 
 def convImgBindata2RGBAArray(data):
     return convImgBindata2Array(data, "RGBA")
@@ -40,6 +55,11 @@ def convImgfile2RGBArray(fname):
     data = f.read()
     rgb = convImgBindata2RGBArray(data)
     return rgb
+
+def resizeImgBinData(data, size_x, size_y):
+    img = Image.open(StringIO.StringIO(data))
+    out_img = img.resize([size_x, size_y])
+    return out_img
 
 def convRGBAArray2Imgfile(rgb_array, fname):
     """
