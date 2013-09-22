@@ -43,7 +43,7 @@ function uploadFiles(url, files) {
 	xhr.open('POST', url, true);
 	formData.append('workers', '192.168.1.243,192.168.1.242');
 //	formData.append('numOfSampleImages', '10000');
-	formData.append('numOfSampleImages', '100');
+	formData.append('numOfSampleImages', '1000');
 	formData.append('srcLongSize', '64');
 	for (var i = 0, file; file = files[i]; ++i) {
 		formData.append('fileUpload', file);
@@ -64,6 +64,7 @@ function uploadFiles(url, files) {
 // 以下のコードはinputタグができてないとエラーになるので、下の方に記述
 document.querySelector('input[type="file"]').addEventListener('change', function(e) {
   uploadFiles('http://localhost:8080/posttest', this.files);
+///  uploadFiles('http://192.168.1.243:8080/posttest', this.files);
 }, false);
 
 </script>

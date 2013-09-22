@@ -175,7 +175,7 @@ def findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, indexes=
     
     #平均色のRSSをソート
     means_p_sort_indexes = numpy.argsort(means_p_rss.A1) #昇順
-    means_p_sort = numpy.sort(means_p_rss.A1)
+#     means_p_sort = numpy.sort(means_p_rss.A1)
 
     #画素毎のRSSによる評価対象とする数
     if num < num_threashold:
@@ -186,6 +186,28 @@ def findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, indexes=
 
     #画素毎のRSSが小さい物を選ぶ
     return findNearestColorImage(dict, ref_rgb, indexes_tar)
+
+
+def findNearestColorImageUseMeansOnly(dict, ref_rgb, means, indexes=None):
+    '''
+    ref_rgb 画像の平均色がもっとも近いものを採用。
+    '''
+    if indexes==None:
+        labels = dict['labels'] 
+        num = numpy.size(labels) #データ数
+        indexes = range(num)
+    else :
+        num = numpy.size(indexes)
+
+    #平均色と指定色のRSS算出
+    means_p = means[indexes, :]
+    means_p_deff = means_p - numpy.ones([num, 1])*numpy.mat(ref_rgb)
+    means_p_rss = numpy.sum(numpy.power(means_p_deff, 2),1) 
+    
+    #平均色の残差が最小のものを選ぶ
+    means_p_min_index = numpy.argmin(means_p_rss.A1) #最小のものを選択
+    indexes_tar = numpy.array(indexes)[means_p_min_index]
+    return indexes_tar, 0
 
 
 def putSmallImageOntoLargeImage(largeImage, smallImage, x, y):
@@ -225,7 +247,8 @@ def makeMosaicImage(imgArray, numsOfSampleImages):
             num_threashold=1
 #             [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(10000))
 #             [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(100))
-            [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(numsOfSampleImages))
+#             [minind, rss] = findNearestColorImageUseMeans(dict, ref_rgb, means, num_threashold, range(numsOfSampleImages))
+            [minind, rss]  = findNearestColorImageUseMeansOnly(dict, ref_rgb, means, range(numsOfSampleImages))
             # 一番近い画像を取得
             near_rgb = getRGBTable(dict, minind)
             putSmallImageOntoLargeImage(dest_image, near_rgb, x*32, y*32)

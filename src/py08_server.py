@@ -73,4 +73,5 @@ def send_static(filename='icon'):
 # コレ必要
 run(host='localhost', port=8080, debug=True)
 # run(host='192.168.1.253', port=8080, debug=True)
+# run(host='192.168.1.243', port=8080, debug=True)
 
