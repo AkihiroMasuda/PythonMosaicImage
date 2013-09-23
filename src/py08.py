@@ -83,7 +83,7 @@ def main(srcImg, ppservers, numsOfSampleImages):
                                    py08_pcalc.findNearestColorImage, py08_pcalc.setRaspberryPiLED,
                                     py08_pcalc.getColorRSSFromRGB, py08_pcalc.getRGBTable, py08_pcalc.putSmallImageOntoLargeImage,
                                      py08_pcalc.getCifar10FilePath, py08_pcalc.isExistMenaFile, py08_pcalc.getMeanFilePath, py08_pcalc.saveMeans, py08_pcalc.loadMeans, ),
-                                 ("numpy","pickle","httplib",))  # 他モジュールに依存関数を入れているが、すべてここで列挙が必要。modulesに書くだけではダメで、むしろそこには書いてはいけない。
+                                 ("numpy","pickle","httplib","ipget",))  # 他モジュールに依存関数を入れているが、すべてここで列挙が必要。modulesに書くだけではダメで、むしろそこには書いてはいけない。
 #         job = job_server.submit(py08_pcalc.makeMosaicImage,
 #                                  (img_in,),
 #                                  (,)

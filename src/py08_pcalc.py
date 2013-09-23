@@ -11,6 +11,8 @@ import os
 # import RPi.GPIO as GPIO ## Import GPIO library
 # import time
 import httplib
+import ipget
+
 def setRaspberryPiLED(host, isON):
     conn = httplib.HTTPConnection(host)
     if (isON):
@@ -233,7 +235,8 @@ def putSmallImageOntoLargeImage(largeImage, smallImage, x, y):
 
 def makeMosaicImage(imgArray, numsOfSampleImages):
     #LED点灯    
-    setRaspberryPiLED("192.168.1.242:8080",True)
+    hosturl = ipget.ipget().ipaddr("eth0").split("/")[0] + ":8080"
+    setRaspberryPiLED(hosturl,True)
     
     dict = unpickle(getCifar10FilePath())
     data = dict['data']
@@ -267,8 +270,10 @@ def makeMosaicImage(imgArray, numsOfSampleImages):
             putSmallImageOntoLargeImage(dest_image, near_rgb, x*32, y*32)
 
     #LED消灯
-    setRaspberryPiLED("192.168.1.242:8080",False)
+    setRaspberryPiLED(hosturl,False)
+
     return dest_image
+
 
 
 if __name__ == '__main__':
