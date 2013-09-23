@@ -8,6 +8,8 @@ Created on 2013/08/30
 import numpy 
 import pickle
 import os
+# import RPi.GPIO as GPIO ## Import GPIO library
+# import time
 
 def getPIXNUM():
     return 32
@@ -226,6 +228,14 @@ def makeMosaicImage(imgArray, numsOfSampleImages):
     data = dict['data']
     labels = dict['labels'] 
     num = numpy.size(labels) #データ数
+    
+    # GPIO
+#     GPIO.setmode(GPIO.BOARD) ## Use board pin numbering
+#     GPIO.setup(12, GPIO.OUT) ## Setup GPIO Pin 7 to OUT
+#     GPIO.output(12, True)
+#     time.sleep(2)
+#     GPIO.output(12, False)
+#     os.system("/home/pi/python_sample/test101_RaspberryPiIO/test101_1_GPIO.py")
     
     # 平均値一覧を取得
     if isExistMenaFile():

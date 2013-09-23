@@ -9,9 +9,20 @@ from bottle import route, run, get, post, request, static_file, template
 import time
 import py08
 import py08_image
+import httplib
 
 def getDirPath():
     return "../result/py08/server/"
+
+def setRaspberryPiLED(host, isON):
+    conn = httplib.HTTPConnection(host)
+    if (isON):
+        conn.request( "GET", "/on" )
+        print conn.getresponse()
+    else:
+        conn.request( "GET", "/off" )
+        print conn.getresponse()
+        
 
 # postでバイナリデータを送ってみる例
 @post('/posttest') # or @route('/login', method='POST')
@@ -43,8 +54,14 @@ def do_posttest():
     img_resized = py08_image.resizeImgBinData(rdat, size_resized[0], size_resized[1])
     srcImg = py08_image.convImg2Array(img_resized, img_resized.mode)
 
+    # raspberry Pi にLED点灯のメッセージ送信
+    setRaspberryPiLED("192.168.1.242:8080", True)
+
     # 分散処理実施
     outImg = py08.main(srcImg, workers, numsOfSampleImages)
+
+    # raspberry Pi にLED点灯のメッセージ送信
+    setRaspberryPiLED("192.168.1.242:8080", False)
     
     #一旦pngファイルとして保存してから返却
     ret_filename = "outImg2.png"

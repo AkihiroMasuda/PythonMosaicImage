@@ -80,7 +80,7 @@ def main(srcImg, ppservers, numsOfSampleImages):
                                  (img_in,numsOfSampleImages,),
                                  (py08_pcalc.unpickle, py08_pcalc.calMeans, py08_pcalc.getImageNum, py08_pcalc.getRGB, py08_pcalc.getPIXSIZE,
                                    py08_pcalc.getPIXNUM, py08_pcalc.findNearestColorImageUseMeansOnly, py08_pcalc.findNearestColorImageUseMeans, 
-                                   py08_pcalc.findNearestColorImage,
+                                   py08_pcalc.findNearestColorImage, 
                                     py08_pcalc.getColorRSSFromRGB, py08_pcalc.getRGBTable, py08_pcalc.putSmallImageOntoLargeImage,
                                      py08_pcalc.getCifar10FilePath, py08_pcalc.isExistMenaFile, py08_pcalc.getMeanFilePath, py08_pcalc.saveMeans, py08_pcalc.loadMeans, ),
                                  ("numpy","pickle",))  # 他モジュールに依存関数を入れているが、すべてここで列挙が必要。modulesに書くだけではダメで、むしろそこには書いてはいけない。

@@ -41,10 +41,11 @@ function uploadFiles(url, files) {
 	var formData = new FormData();
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', url, true);
-	formData.append('workers', '192.168.1.243,192.168.1.242');
+//	formData.append('workers', '192.168.1.243,192.168.1.242');
+	formData.append('workers', '192.168.1.242,');
 //	formData.append('numOfSampleImages', '10000');
 	formData.append('numOfSampleImages', '1000');
-	formData.append('srcLongSize', '64');
+	formData.append('srcLongSize', '16');
 	for (var i = 0, file; file = files[i]; ++i) {
 		formData.append('fileUpload', file);
 	}
