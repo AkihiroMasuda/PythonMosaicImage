@@ -14,6 +14,6 @@ class Ticktock(object):
     def tick(self):
         self.ticktime = time.time()
     
-    def tock(self):
+    def tock(self, label=""):
         self.tocktime = time.time()
-        print "測定時間:" + str(self.tocktime-self.ticktime) + "[s]"
+        print label + "  " + "測定時間:" + str(self.tocktime-self.ticktime) + "[s]"

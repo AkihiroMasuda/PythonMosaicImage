@@ -9,6 +9,7 @@ from bottle import route, run, get, post, request, static_file, template
 import time
 import py08
 import py08_image
+import Ticktock
 
 def getDirPath():
     return "../result/py08/server/"
@@ -32,6 +33,7 @@ def do_posttest():
     workers     = tuple(request.params.get('workers', 'NONE').split(',')) #分散処理対象のPCのIP
     numsOfSampleImages  = int(request.params.get('numOfSampleImages', '100'))
     src_long_size       = int(request.params.get('srcLongSize', '32')) #元画像を縮小したあとの長辺長さ
+    ledEnable          = request.params.get('ledEnable', 'False') == 'True' #元画像を縮小したあとの長辺長さ
     upload      = request.files.get('fileUpload') #ファイルのデータ取得
     name, ext   = os.path.splitext(upload.filename) #ファイル名を分割
     
@@ -58,7 +60,7 @@ def do_posttest():
 #     setRaspberryPiLED("192.168.1.242:8080", True)
 
     # 分散処理実施
-    outImg = py08.main(srcImg, workers, numsOfSampleImages)
+    outImg = py08.main(srcImg, workers, numsOfSampleImages, ledEnable)
 
     # raspberry Pi にLED点灯のメッセージ送信
 #     setRaspberryPiLED("192.168.1.242:8080", False)
@@ -71,6 +73,7 @@ def do_posttest():
 
     ret = static_file(ret_filename, root=getDirPath(), download=ret_filename)
     ret.add_header('Access-Control-Allow-Origin', '*')
+
     return ret
          
 #     return "NG"

@@ -233,10 +233,13 @@ def putSmallImageOntoLargeImage(largeImage, smallImage, x, y):
     largeImage[x:x+xsize, y:y+ysize, :] = smallImage
 
 
-def makeMosaicImage(imgArray, numsOfSampleImages):
+def makeMosaicImage(imgArray, numsOfSampleImages, ledEnable):
     #LED点灯    
-    hosturl = ipget.ipget().ipaddr("eth0").split("/")[0] + ":8080"
-    setRaspberryPiLED(hosturl,True)
+    if ledEnable:
+        hosturl = ipget.ipget().ipaddr("eth0").split("/")[0] + ":8080"
+        setRaspberryPiLED(hosturl,True)
+    else:
+        pass
     
     dict = unpickle(getCifar10FilePath())
     data = dict['data']
@@ -270,7 +273,10 @@ def makeMosaicImage(imgArray, numsOfSampleImages):
             putSmallImageOntoLargeImage(dest_image, near_rgb, x*32, y*32)
 
     #LED消灯
-    setRaspberryPiLED(hosturl,False)
+    if ledEnable:
+        setRaspberryPiLED(hosturl,False)
+    else:
+        pass
 
     return dest_image
 

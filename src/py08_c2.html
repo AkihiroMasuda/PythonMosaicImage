@@ -1,7 +1,9 @@
 <html>
 <head>
-<script type="text/javascript">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/javascript">
 
+var startTime;
 
 // XMLHttpRequestの主だった部分を作成
 function buildXHR(xhr){
@@ -22,6 +24,11 @@ function buildXHR(xhr){
 		    img.src = window.URL.createObjectURL(blob);
 		    document.body.appendChild(img);
 		    img.setAttribute("width", "200px");
+            
+            var curTime = new Date();
+            status = '処理時間 : ' + (curTime - startTime) / 1000 + ' [sec]';
+//            alert(status);
+            document.getElementById("main_text").firstChild.nodeValue = status;
 		}
 	};
 
@@ -38,14 +45,20 @@ function doGET_IMAGE(){
 
 // 画像送信POST発行、変換結果の画像を取得
 function uploadFiles(url, files) {
+    startTime = new Date();
+    
 	var formData = new FormData();
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', url, true);
 //	formData.append('workers', '192.168.1.243,192.168.1.242');
-	formData.append('workers', '192.168.1.242,');
+	formData.append('workers', '192.168.1.240,192.168.1.241,192.168.1.242,192.168.1.243');
+//	formData.append('workers', '192.168.1.242,');
 //	formData.append('numOfSampleImages', '10000');
-	formData.append('numOfSampleImages', '1000');
-	formData.append('srcLongSize', '16');
+	formData.append('numOfSampleImages', '5000');
+//	formData.append('srcLongSize', '16');
+//	formData.append('srcLongSize', '64');
+	formData.append('srcLongSize', '86');
+	formData.append('ledEnable', 'False');
 	for (var i = 0, file; file = files[i]; ++i) {
 		formData.append('fileUpload', file);
 	}
@@ -60,7 +73,10 @@ function uploadFiles(url, files) {
 <br>
 <input type="file" />
 <br>
-
+<text id="main_text">  </text>
+<br>
+<br>
+    
 <script type="text/javascript">
 // 以下のコードはinputタグができてないとエラーになるので、下の方に記述
 document.querySelector('input[type="file"]').addEventListener('change', function(e) {

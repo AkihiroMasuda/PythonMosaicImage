@@ -46,7 +46,7 @@ def split_seq(seq, num):
     size = int(math.ceil(float(l)/num))
     return [seq[i:i+size] for i in range(0, len(seq), size)]    
     
-def main(srcImg, ppservers, numsOfSampleImages):
+def main(srcImg, ppservers, numsOfSampleImages, ledEnable):
     """
     input : 
         srcImg :入力画像配列. サイズ  NxMx3 のRGBのnum.array
@@ -77,7 +77,7 @@ def main(srcImg, ppservers, numsOfSampleImages):
     jobs = []
     for i, img_in in enumerate(ref_img_separated):
         job = job_server.submit(py08_pcalc.makeMosaicImage,
-                                 (img_in,numsOfSampleImages,),
+                                 (img_in,numsOfSampleImages,ledEnable),
                                  (py08_pcalc.unpickle, py08_pcalc.calMeans, py08_pcalc.getImageNum, py08_pcalc.getRGB, py08_pcalc.getPIXSIZE,
                                    py08_pcalc.getPIXNUM, py08_pcalc.findNearestColorImageUseMeansOnly, py08_pcalc.findNearestColorImageUseMeans, 
                                    py08_pcalc.findNearestColorImage, py08_pcalc.setRaspberryPiLED,
