@@ -3,16 +3,16 @@ import RPi.GPIO as GPIO
 import ipget
 
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(12, GPIO.OUT)
+GPIO.setup(8, GPIO.OUT)
 
 @get('/on')
 def gpioON():
-	GPIO.output(12, True)
+	GPIO.output(8, True)
 	return "hogehoge"
 
 @get('/off')
 def gpioOFF():
-	GPIO.output(12, False)
+	GPIO.output(8, False)
 	return "OFOFOFOF"
 
 hostip = ipget.ipget().ipaddr("eth0").split("/")[0]
